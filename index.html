@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <title>Suki Mini POS</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: #202a24;
+      background: #fff;
+      --green: #176b45;
+      --green-dark: #10583a;
+      --green-soft: #f0f7f2;
+      --text-muted: #66716a;
+      --border: #e5ebe6;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 900px;
+      margin: 0;
+      background: #fff;
+      background-image: radial-gradient(ellipse at 50% 0, #f3f8f4 0, #fff 440px);
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .page {
+      width: min(100% - 64px, 1240px);
+      margin: 0 auto;
+      padding: 40px 0 56px;
+    }
+
+    header {
+      margin-bottom: 38px;
+      padding: 24px 28px;
+      border: 1px solid #e8efe9;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 12px 34px rgba(36, 75, 48, 0.06);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      color: var(--green);
+      font-size: 0.78rem;
+      font-weight: 750;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--green-soft);
+      font-size: 1rem;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      line-height: 1.25;
+      letter-spacing: -0.035em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-note {
+      margin: 5px 0 0;
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+
+    .pos-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      align-items: start;
+      gap: 36px;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .menu-item,
+    .cart-panel {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #fff;
+    }
+
+    .menu-item {
+      display: flex;
+      min-height: 218px;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 20px;
+      box-shadow: 0 7px 20px rgba(31, 64, 42, 0.045);
+      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    }
+
+    .menu-item:hover {
+      transform: translateY(-3px);
+      border-color: #c9ddce;
+      box-shadow: 0 14px 28px rgba(31, 64, 42, 0.09);
+    }
+
+    .product-icon {
+      display: grid;
+      width: 54px;
+      height: 54px;
+      margin-bottom: 18px;
+      place-items: center;
+      border-radius: 16px;
+      background: var(--green-soft);
+      font-size: 1.8rem;
+    }
+
+    .menu-item h3 {
+      margin: 0 0 7px;
+      font-size: 1.12rem;
+    }
+
+    .price {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.94rem;
+    }
+
+    .price strong {
+      color: #263a2d;
+      font-size: 1.2rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .button {
+      min-height: 44px;
+      padding: 10px 14px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 650;
+      transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
+    }
+
+    .button:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .button:focus-visible {
+      outline: 3px solid #9bbcff;
+      outline-offset: 2px;
+    }
+
+    .button-primary {
+      color: #fff;
+      background: var(--green);
+      box-shadow: 0 4px 10px rgba(23, 107, 69, 0.16);
+    }
+
+    .button-primary:hover {
+      background: var(--green-dark);
+    }
+
+    .button-secondary {
+      color: #8d3434;
+      border-color: #edd7d5;
+      background: #fff;
+    }
+
+    .button-secondary:hover:not(:disabled) {
+      border-color: #dfbdb9;
+      background: #fff8f7;
+    }
+
+    .button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .cart-section {
+      margin-top: 0;
+    }
+
+    .cart-panel {
+      padding: 22px 24px;
+      box-shadow: 0 8px 24px rgba(31, 64, 42, 0.045);
+    }
+
+    .cart-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .cart-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 13px 0;
+      border-bottom: 1px solid #eceff1;
+    }
+
+    .cart-row:first-child {
+      padding-top: 0;
+    }
+
+    .cart-row:last-child {
+      border-bottom: 0;
+    }
+
+    .cart-name {
+      font-weight: 600;
+    }
+
+    .cart-detail {
+      margin-top: 3px;
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+
+    .cart-line-total {
+      flex: 0 0 auto;
+      font-weight: 650;
+    }
+
+    .empty-message {
+      margin: 0;
+      padding: 12px 0 22px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .cart-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .total-label {
+      font-weight: 650;
+    }
+
+    .total-value {
+      display: block;
+      margin-top: 2px;
+      color: var(--green);
+      font-size: 1.65rem;
+      font-weight: 750;
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="brand"><span class="brand-mark" aria-hidden="true">🍲</span> Suki Mini POS</div>
+      <h1>รับออร์เดอร์</h1>
+      <p class="subtitle">เลือกเมนูเพื่อเพิ่มรายการลงในตะกร้า</p>
+    </header>
+
+    <div class="pos-layout">
+      <section aria-labelledby="menu-heading">
+        <div class="section-heading">
+          <div>
+            <h2 id="menu-heading">เมนู</h2>
+            <p class="section-note">เลือกเมนูที่ลูกค้าต้องการ</p>
+          </div>
+        </div>
+        <div class="menu-grid" id="menu-list"></div>
+      </section>
+
+      <section class="cart-section" aria-labelledby="cart-heading">
+        <div class="section-heading">
+          <div>
+            <h2 id="cart-heading">ตะกร้าสินค้า</h2>
+            <p class="section-note">ตรวจสอบรายการและยอดรวม</p>
+          </div>
+        </div>
+        <div class="cart-panel">
+          <ul class="cart-list" id="cart-list" aria-live="polite" aria-relevant="all"></ul>
+          <p class="empty-message" id="empty-message">ยังไม่มีสินค้าในตะกร้า</p>
+          <div class="cart-footer">
+            <div>
+              <span class="total-label">ยอดรวม</span>
+              <output class="total-value" id="cart-total" aria-live="polite">0 บาท</output>
+            </div>
+            <button class="button button-secondary" id="clear-cart" type="button" disabled>
+              ล้างตะกร้า
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    "use strict";
+
+    const products = [
+      { id: "pork-set", name: "ชุดหมู", price: 199, icon: "🐷" },
+      { id: "beef-set", name: "ชุดเนื้อ", price: 249, icon: "🥩" },
+      { id: "water", name: "น้ำดื่ม", price: 20, icon: "🥤" }
+    ];
+    const cart = new Map();
+    const menuList = document.getElementById("menu-list");
+    const cartList = document.getElementById("cart-list");
+    const emptyMessage = document.getElementById("empty-message");
+    const cartTotal = document.getElementById("cart-total");
+    const clearCartButton = document.getElementById("clear-cart");
+
+    function formatBaht(amount) {
+      return `${amount.toLocaleString("th-TH")} บาท`;
+    }
+
+    function renderMenu() {
+      for (const product of products) {
+        const card = document.createElement("article");
+        card.className = "menu-item";
+
+        const details = document.createElement("div");
+        const icon = document.createElement("span");
+        icon.className = "product-icon";
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = product.icon;
+        const name = document.createElement("h3");
+        name.textContent = product.name;
+        const price = document.createElement("p");
+        price.className = "price";
+        const priceValue = document.createElement("strong");
+        priceValue.textContent = product.price.toLocaleString("th-TH");
+        price.append(priceValue, document.createTextNode(" บาท"));
+        details.append(icon, name, price);
+
+        const addButton = document.createElement("button");
+        addButton.className = "button button-primary";
+        addButton.type = "button";
+        addButton.textContent = "เพิ่มลงตะกร้า";
+        addButton.setAttribute("aria-label", `เพิ่ม${product.name}ลงตะกร้า`);
+        addButton.addEventListener("click", () => {
+          cart.set(product.id, (cart.get(product.id) || 0) + 1);
+          renderCart();
+        });
+
+        card.append(details, addButton);
+        menuList.append(card);
+      }
+    }
+
+    function renderCart() {
+      cartList.replaceChildren();
+      let total = 0;
+
+      for (const product of products) {
+        const quantity = cart.get(product.id) || 0;
+        if (quantity === 0) {
+          continue;
+        }
+
+        const lineTotal = product.price * quantity;
+        total += lineTotal;
+
+        const row = document.createElement("li");
+        row.className = "cart-row";
+
+        const details = document.createElement("div");
+        const name = document.createElement("div");
+        name.className = "cart-name";
+        name.textContent = product.name;
+        const quantityAndPrice = document.createElement("div");
+        quantityAndPrice.className = "cart-detail";
+        quantityAndPrice.textContent = `${quantity} รายการ × ${formatBaht(product.price)}`;
+        details.append(name, quantityAndPrice);
+
+        const lineTotalElement = document.createElement("span");
+        lineTotalElement.className = "cart-line-total";
+        lineTotalElement.textContent = formatBaht(lineTotal);
+        row.append(details, lineTotalElement);
+        cartList.append(row);
+      }
+
+      const isEmpty = cart.size === 0;
+      emptyMessage.hidden = !isEmpty;
+      clearCartButton.disabled = isEmpty;
+      cartTotal.textContent = formatBaht(total);
+    }
+
+    clearCartButton.addEventListener("click", () => {
+      cart.clear();
+      renderCart();
+    });
+
+    renderMenu();
+    renderCart();
+  </script>
+</body>
+</html>
